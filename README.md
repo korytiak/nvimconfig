@@ -18,3 +18,10 @@ Clone to ~/.config
 ```
 git clone https://github.com/korytiak/nvimconfig.git ~/.config/nvim
 ```
+
+Go into /lua/sveto/packer.lua and source and sync plugins:
+
+```
+:so
+:PackerSync
+```
