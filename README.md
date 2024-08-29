@@ -6,6 +6,9 @@ dotnet tool install --global csharp-ls
 ```
 npm install -g typescript typescript-language-server
 ```
+```
+brew install lua-language-server
+```
 
 Backup your nvim config first, then remove it.
 

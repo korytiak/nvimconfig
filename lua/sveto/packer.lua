@@ -24,4 +24,5 @@ return require('packer').startup(function(use)
 	use 'L3MON4D3/LuaSnip' -- Snippets plugin
     use 'f-person/auto-dark-mode.nvim'
 	use 'rose-pine/neovim'
+    use 'williamboman/mason.nvim'
 end)
