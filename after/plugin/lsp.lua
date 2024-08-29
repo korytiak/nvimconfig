@@ -2,6 +2,7 @@ require'lspconfig'.pyright.setup{}
 require'lspconfig'.tsserver.setup{}
 require'lspconfig'.csharp_ls.setup{}
 require'lspconfig'.lua_ls.setup{}
+require'lspconfig'.marksman.setup{}
 
 local use = require('packer').use
 require('packer').startup(function()

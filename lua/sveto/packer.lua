@@ -25,4 +25,5 @@ return require('packer').startup(function(use)
     use 'f-person/auto-dark-mode.nvim'
 	use 'rose-pine/neovim'
     use 'williamboman/mason.nvim'
+    use 'yetone/avante.nvim'
 end)
