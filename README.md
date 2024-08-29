@@ -9,11 +9,15 @@ npm install -g typescript typescript-language-server
 ```
 brew install lua-language-server
 ```
+```
+brew install marksman
+```
 
 Backup your nvim config first, then remove it.
 
 ```
-rm -rf ~/.config/nvim
+rm -rf ~/.config/nvim:w
+
 ```
 
 Clone to ~/.config
