@@ -12,6 +12,15 @@ brew install lua-language-server
 ```
 brew install marksman
 ```
+```
+brew install go
+```
+```
+brew install gopls
+```
+```
+brew install ripgrep
+```
 
 Backup your nvim config first, then remove it.
 
