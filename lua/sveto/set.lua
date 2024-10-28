@@ -3,10 +3,14 @@ vim.opt.guicursor = ""
 vim.opt.nu = true
 vim.opt.relativenumber = true
 
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
+
+vim.cmd([[
+    augroup FileTypeSettings
+        autocmd!
+        autocmd FileType javascript,typescript setlocal shiftwidth=2 softtabstop=2 expandtab
+    augroup END
+]])
 
 vim.opt.smartindent = true
 

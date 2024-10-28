@@ -1,9 +1,7 @@
-require'lspconfig'.pyright.setup{}
-require'lspconfig'.tsserver.setup{}
-require'lspconfig'.csharp_ls.setup{}
 require'lspconfig'.lua_ls.setup{}
 require'lspconfig'.marksman.setup{}
 require'lspconfig'.gopls.setup{}
+require'lspconfig'.lemminx.setup{}
 
 local use = require('packer').use
 require('packer').startup(function()
@@ -14,19 +12,13 @@ require('packer').startup(function()
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
 end)
 
--- Add additional capabilities supported by nvim-cmp
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-local lspconfig = require('lspconfig')
-
--- Enable some language servers with the additional completion capabilities offered by nvim-cmp
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver' }
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    -- on_attach = my_custom_on_attach,
-    capabilities = capabilities,
-  }
-end
+require('null-ls').setup({
+    sources = {
+        require('null-ls').builtins.formatting.prettier.with({
+            extra_args = { "--single-quote", "--jsx-single-quote", "--tab-width=2" },
+        }),
+    },
+})
 
 -- luasnip setup
 local luasnip = require 'luasnip'
@@ -53,3 +45,69 @@ cmp.setup {
   },
 }
 
+-- init.lua or your Lua configuration file
+
+-- Set up TypeScript language server
+require('lspconfig').ts_ls.setup({
+    on_attach = function(client, bufnr)
+        -- Disable default formatting
+        client.server_capabilities.document_formatting = false
+
+        local function format_with_prettier()
+            local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
+            if ft == "typescript" or ft == "typescriptreact" then
+                vim.cmd([[silent! !prettier --write %]])
+                vim.cmd("edit!")
+            end
+        end
+
+        -- Format on save
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            buffer = bufnr,
+            callback = format_with_prettier,
+        })
+    end,
+})
+
+require'lspconfig'.omnisharp.setup {
+    cmd = { "dotnet", "/Users/sveto/Projects/omnisharp/OmniSharp.dll" },
+    filetypes = { "cs", "vb", "fs", "razor" },
+    settings = {
+      FormattingOptions = {
+        -- Enables support for reading code style, naming convention and analyzer
+        -- settings from .editorconfig.
+        EnableEditorConfigSupport = true,
+        -- Specifies whether 'using' directives should be grouped and sorted during
+        -- document formatting.
+        OrganizeImports = nil,
+      },
+      MsBuild = {
+        -- If true, MSBuild project system will only load projects for files that
+        -- were opened in the editor. This setting is useful for big C# codebases
+        -- and allows for faster initialization of code navigation features only
+        -- for projects that are relevant to code that is being edited. With this
+        -- setting enabled OmniSharp may load fewer projects and may thus display
+        -- incomplete reference lists for symbols.
+        LoadProjectsOnDemand = nil,
+      },
+      RoslynExtensionsOptions = {
+        -- Enables support for roslyn analyzers, code fixes and rulesets.
+        EnableAnalyzersSupport = nil,
+        -- Enables support for showing unimported types and unimported extension
+        -- methods in completion lists. When committed, the appropriate using
+        -- directive will be added at the top of the current file. This option can
+        -- have a negative impact on initial completion responsiveness,
+        -- particularly for the first few completion sessions after opening a
+        -- solution.
+        EnableImportCompletion = nil,
+        -- Only run analyzers against open files when 'enableRoslynAnalyzers' is
+        -- true
+        AnalyzeOpenDocumentsOnly = nil,
+      },
+      Sdk = {
+        -- Specifies whether to include preview versions of the .NET SDK when
+        -- determining which version to use for project loading.
+        IncludePrereleases = true,
+      },
+    },
+}
