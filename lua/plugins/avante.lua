@@ -43,5 +43,11 @@ return {
                         ft = { "markdown", "Avante" },
                 },
         },
+        claude = {
+                endpoint = "https://api.anthropic.com",
+                model = "claude-3-haiku",
+                temperature = 0,
+                max_tokens = 4096,
+        },
 }
 
