@@ -49,5 +49,19 @@ return {
                 temperature = 0,
                 max_tokens = 4096,
         },
+        config = function()
+                vim.api.nvim_create_autocmd("User", {
+                        pattern = "ToggleMyPrompt",
+                        callback = function() 
+                                require("avante.config").override({
+                                        system_prompt = "You are a best senior developer in the company, you love brevity and high quality of code. You don't comment the code because it's self-describing and you don't talk about the code, you just output it. Only when really necessary." 
+                                }) 
+                        end,
+                })
+
+                vim.keymap.set("n", "<leader>am", function() 
+                        vim.api.nvim_exec_autocmds("User", { pattern = "ToggleMyPrompt" }) 
+                end, { desc = "avante: toggle my prompt" })
+        end,
 }
 
