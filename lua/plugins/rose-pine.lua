@@ -1,5 +1,5 @@
 return {
-        'marko-cerovac/material.nvim',
+        'rose-pine/neovim',
         config = function()
         end,
 }
