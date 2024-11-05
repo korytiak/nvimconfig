@@ -1,37 +1,17 @@
-Install language servers:
+# My personal nvim config
+
+## Instalation
+
+* Back up your config (~/.config/nvim)
+
+* Clone config into yours
 
 ```
-dotnet tool install --global csharp-ls
-```
-```
-npm install -g typescript typescript-language-server
-```
-```
-brew install lua-language-server
-```
-```
-brew install marksman
-```
-```
-brew install go
-```
-```
-brew install gopls
-```
-```
-brew install ripgrep
-```
-
-Backup your nvim config first, then remove it.
-
-```
-rm -rf ~/.config/nvim:w
-
-```
-
-Clone to ~/.config
-
-```
+rm -rf ~/.config/nvim
 git clone https://github.com/korytiak/nvimconfig.git ~/.config/nvim
 ```
+
+* Install language servers you need: https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+
+* Run nvim and explore/extend mappings according to your needs in remap.lua to be able to navigate with ease
 
