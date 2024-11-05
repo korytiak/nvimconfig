@@ -1,46 +1,59 @@
-vim.g.mapleader = " "
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
-vim.keymap.set("n", "<Leader>gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<Leader>.", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true })
+local function navigate_buffers(direction)
+	local current_buf = vim.api.nvim_get_current_buf()
+	local next_buf = current_buf
+	repeat
+		vim.cmd(direction == "next" and "bnext" or "bprevious")
+		next_buf = vim.api.nvim_get_current_buf()
+	until vim.api.nvim_buf_get_option(next_buf, "buftype") ~= "terminal" or next_buf == current_buf
+end
 
-vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
-vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
-vim.keymap.set("n", "<Leader>n", vim.diagnostic.goto_next)
-vim.keymap.set("n", "<Leader>j", ":bnext<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<Leader>k", ":bprevious<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "<Leader>w", ":bd<CR>", { noremap = true, silent = true })
-
-vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
-vim.keymap.set("n", "<leader>Y", [["+Y]])
-
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
-
-vim.keymap.set("n", "<C-f>", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
-
--- Function to move selected text to a new file in the current file's directory and delete it
 function MoveSelectionToFile()
-	-- Get the start and end position of the visual selection
 	local start_pos = vim.fn.getpos("'<")
 	local end_pos = vim.fn.getpos("'>")
-
-	-- Get the lines from the selection
 	local lines = vim.fn.getline(start_pos[2], end_pos[2])
-
-	-- Get the directory of the current file
 	local current_file_dir = vim.fn.expand("%:p:h") .. "/"
-
-	-- Prompt the user for a file name
 	local filename = vim.fn.input("Save selection to file: ", current_file_dir)
-
-	-- Write the selected lines to the file
 	vim.fn.writefile(lines, filename)
-
-	-- Delete the selected text
 	vim.api.nvim_buf_set_lines(0, start_pos[2] - 1, end_pos[2], false, {})
-
-	-- Open the new file in the current window
 	vim.cmd("edit " .. filename)
 end
 
--- Map the function to <leader>mf in visual mode
+vim.keymap.set("n", "<C-t>", function()
+	local term_bufnr
+	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_get_option(bufnr, "buftype") == "terminal" then
+			term_bufnr = bufnr
+			break
+		end
+	end
+	if term_bufnr then
+		vim.api.nvim_set_current_buf(term_bufnr)
+	else
+		vim.cmd("terminal")
+	end
+	vim.cmd("startinsert")
+end, { noremap = true, silent = true })
+
+vim.keymap.set("n", "<C-j>", function()
+	navigate_buffers("next")
+end, { noremap = true, silent = true })
+vim.keymap.set("n", "<C-k>", function()
+	navigate_buffers("previous")
+end, { noremap = true, silent = true })
+
+vim.g.mapleader = " "
+vim.keymap.set("t", "<C-j>", "<C-\\><C-n> :bnext<CR>", { noremap = true, silent = true })
+vim.keymap.set("t", "<C-k>", "<C-\\><C-n> :bprevious<CR>", { noremap = true, silent = true })
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<Leader>gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<Leader>.", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true })
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("n", "<Leader>n", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<Leader>w", ":bd<CR>", { noremap = true, silent = true })
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
+vim.keymap.set("n", "<C-f>", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
 vim.api.nvim_set_keymap("v", "<leader>mf", ":lua MoveSelectionToFile()<CR>", { noremap = true, silent = true })
