@@ -4,68 +4,117 @@ return {
 		config = function()
 			vim.opt.signcolumn = "yes"
 
-			-- Add cmp_nvim_lsp capabilities settings to lspconfig
-			-- This should be executed before you configure any language server
-			local lspconfig_defaults = require("lspconfig").util.default_config
+			local lspconfig = require("lspconfig")
+			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
-			require("lspconfig").lua_ls.setup({})
-			require("lspconfig").marksman.setup({})
-			require("lspconfig").gopls.setup({})
-			require("lspconfig").lemminx.setup({})
-			require("lspconfig").ts_ls.setup({})
-			require("lspconfig").csharp_ls.setup({})
+			-- Add capabilities to all language servers
+			local capabilities = cmp_nvim_lsp.default_capabilities()
 
-			lspconfig_defaults.capabilities = vim.tbl_deep_extend(
-				"force",
-				lspconfig_defaults.capabilities,
-				require("cmp_nvim_lsp").default_capabilities()
-			)
+			-- LSP server configurations
+			lspconfig.lua_ls.setup({ capabilities = capabilities })
+			lspconfig.marksman.setup({ capabilities = capabilities })
+			lspconfig.gopls.setup({ capabilities = capabilities })
+			lspconfig.lemminx.setup({ capabilities = capabilities })
+			lspconfig.ts_ls.setup({ capabilities = capabilities })
+			lspconfig.csharp_ls.setup({ capabilities = capabilities })
 
-			-- This is where you enable features that only work
-			-- if there is a language server active in the file
+			-- Key mappings for LSP features
 			vim.api.nvim_create_autocmd("LspAttach", {
-				desc = "LSP actions",
+				desc = "LSP key mappings",
 				callback = function(event)
 					local opts = { buffer = event.buf }
-
-					vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<cr>", opts)
-					vim.keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<cr>", opts)
-					vim.keymap.set("n", "gD", "<cmd>lua vim.lsp.buf.declaration()<cr>", opts)
-					vim.keymap.set("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<cr>", opts)
-					vim.keymap.set("n", "go", "<cmd>lua vim.lsp.buf.type_definition()<cr>", opts)
-					vim.keymap.set("n", "gr", "<cmd>lua vim.lsp.buf.references()<cr>", opts)
-					vim.keymap.set("n", "gs", "<cmd>lua vim.lsp.buf.signature_help()<cr>", opts)
-					vim.keymap.set("n", "<F2>", "<cmd>lua vim.lsp.buf.rename()<cr>", opts)
-					vim.keymap.set({ "n", "x" }, "<F3>", "<cmd>lua vim.lsp.buf.format({async = true})<cr>", opts)
-					vim.keymap.set("n", "<F4>", "<cmd>lua vim.lsp.buf.code_action()<cr>", opts)
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+					vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+					vim.keymap.set("n", "go", vim.lsp.buf.type_definition, opts)
+					vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+					vim.keymap.set("n", "gs", vim.lsp.buf.signature_help, opts)
+					vim.keymap.set("n", "<F2>", vim.lsp.buf.rename, opts)
+					vim.keymap.set({ "n", "x" }, "<F3>", function()
+						vim.lsp.buf.format({ async = true })
+					end, opts)
+					vim.keymap.set("n", "<F4>", vim.lsp.buf.code_action, opts)
 				end,
-			})
-
-			local cmp = require("cmp")
-
-			cmp.setup({
-				sources = {
-					{ name = "nvim_lsp" },
-				},
-				snippet = {
-					expand = function(args)
-						-- You need Neovim v0.10 to use vim.snippet
-						vim.snippet.expand(args.body)
-					end,
-				},
-				mapping = cmp.mapping.preset.insert({}),
 			})
 		end,
 	},
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
-			{ "williamboman/mason.nvim", config = true },
+			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
-			{ "j-hui/fidget.nvim", opts = {} },
 			"hrsh7th/cmp-nvim-lsp",
-			"hrsh7th/nvim-cmp",
 		},
+	},
+	{
+		"hrsh7th/nvim-cmp",
+		event = "InsertEnter",
+		dependencies = {
+			"L3MON4D3/LuaSnip", -- Snippet engine
+			"rafamadriz/friendly-snippets", -- Predefined snippets
+			"saadparwaiz1/cmp_luasnip", -- Snippets integration
+			"hrsh7th/cmp-nvim-lsp", -- LSP completions
+			"hrsh7th/cmp-path", -- Path completions
+		},
+		config = function()
+			local cmp = require("cmp")
+			local luasnip = require("luasnip")
+
+			-- Load friendly snippets
+			require("luasnip.loaders.from_vscode").lazy_load()
+
+			-- Set up nvim-cmp
+			cmp.setup({
+				snippet = {
+					expand = function(args)
+						luasnip.lsp_expand(args.body)
+					end,
+				},
+				mapping = cmp.mapping.preset.insert({
+					["<C-n>"] = cmp.mapping.select_next_item(),
+					["<C-p>"] = cmp.mapping.select_prev_item(),
+					["<C-b>"] = cmp.mapping.scroll_docs(-4),
+					["<C-f>"] = cmp.mapping.scroll_docs(4),
+					["<C-Space>"] = cmp.mapping.complete(),
+					["<Tab>"] = cmp.mapping(function(fallback)
+						if cmp.visible() then
+							cmp.confirm({ select = true }) -- Confirm completion if the menu is visible
+						elseif luasnip.expand_or_jumpable() then
+							luasnip.expand_or_jump() -- Expand the snippet or jump to the next placeholder
+						else
+							fallback() -- Insert a tab character if no other action is available
+						end
+					end, { "i", "s" }),
+					["<S-Tab>"] = cmp.mapping(function(fallback)
+						if luasnip.jumpable(-1) then
+							luasnip.jump(-1) -- Jump to the previous placeholder
+						else
+							fallback() -- Perform default behavior for Shift-Tab
+						end
+					end, { "i", "s" }),
+					["<C-l>"] = cmp.mapping(function(fallback)
+						if luasnip.expand_or_jumpable() then
+							luasnip.expand_or_jump()
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+					["<C-h>"] = cmp.mapping(function(fallback)
+						if luasnip.jumpable(-1) then
+							luasnip.jump(-1)
+						else
+							fallback()
+						end
+					end, { "i", "s" }),
+				}),
+				sources = {
+					{ name = "nvim_lsp" },
+					{ name = "luasnip" },
+					{ name = "path" },
+				},
+			})
+		end,
 	},
 }
