@@ -46,7 +46,11 @@ vim.keymap.set("t", "<C-j>", "<C-\\><C-n> :bnext<CR>", { noremap = true, silent 
 vim.keymap.set("t", "<C-k>", "<C-\\><C-n> :bprevious<CR>", { noremap = true, silent = true })
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
-vim.keymap.set("n", "<Leader>gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { noremap = true, silent = true })
+vim.keymap.set("n", "<Leader>gd", function()
+	vim.lsp.buf.definition()
+	vim.cmd("normal! zt")
+end, { noremap = true, silent = true })
+
 vim.keymap.set("n", "<Leader>.", "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
