@@ -15,7 +15,14 @@ return {
 			lspconfig.marksman.setup({ capabilities = capabilities })
 			lspconfig.gopls.setup({ capabilities = capabilities })
 			lspconfig.lemminx.setup({ capabilities = capabilities })
-			lspconfig.ts_ls.setup({ capabilities = capabilities })
+			require("lspconfig").ts_ls.setup({
+				on_attach = function(client, bufnr)
+					client.server_capabilities.documentFormattingProvider = false
+				end,
+				filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+			})
+			require("lspconfig").tailwindcss.setup({})
+
 			lspconfig.csharp_ls.setup({ capabilities = capabilities })
 
 			-- Key mappings for LSP features
