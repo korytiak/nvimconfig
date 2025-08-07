@@ -28,18 +28,5 @@ require("lazy").setup({
     },
 })
 
--- Function to set Rose Pine theme based on system preference
-local function set_rose_pine_theme()
-    local handle = io.popen("defaults read -g AppleInterfaceStyle")
-    local result = handle:read("*a")
-    handle:close()
-
-    if result:find("Dark") then
-        vim.cmd([[colorscheme rose-pine]]) -- Regular (dark mode)
-    else
-        vim.cmd([[colorscheme rose-pine-dawn]]) -- Light mode
-    end
-end
-
-set_rose_pine_theme()
+vim.cmd([[colorscheme rose-pine]]) -- Regular (dark mode)
 
