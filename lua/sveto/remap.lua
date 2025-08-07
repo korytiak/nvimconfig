@@ -18,22 +18,6 @@ function MoveSelectionToFile()
 	vim.cmd("edit " .. filename)
 end
 
-vim.keymap.set("n", "<C-t>", function()
-	local term_bufnr
-	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-		if vim.api.nvim_buf_get_option(bufnr, "buftype") == "terminal" then
-			term_bufnr = bufnr
-			break
-		end
-	end
-	if term_bufnr then
-		vim.api.nvim_set_current_buf(term_bufnr)
-	else
-		vim.cmd("terminal")
-	end
-	vim.cmd("startinsert")
-end, { noremap = true, silent = true })
-
 vim.keymap.set("n", "<C-j>", function()
 	navigate_buffers("next")
 end, { noremap = true, silent = true })
