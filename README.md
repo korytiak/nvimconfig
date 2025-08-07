@@ -15,3 +15,7 @@ git clone https://github.com/korytiak/nvimconfig.git ~/.config/nvim
 
 * Run nvim and explore/extend mappings according to your needs in remap.lua to be able to navigate with ease
 
+* For tmux vim style remap run:
+```
+tmux source tmux.conf
+```
