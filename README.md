@@ -17,5 +17,6 @@ git clone https://github.com/korytiak/nvimconfig.git ~/.config/nvim
 
 * For tmux vim style remap run:
 ```
-tmux source tmux.conf
+cat tmux-vim.sh >> ~/.zshrc
+source ~/.zshrc
 ```
