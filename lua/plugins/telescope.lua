@@ -11,6 +11,7 @@ return {
 		local builtin = require("telescope.builtin")
 
 		vim.keymap.set("n", "<leader>pf", builtin.find_files, {})
+    vim.keymap.set("n", "<C-f>", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
 		vim.keymap.set("n", "<leader>p", builtin.lsp_document_symbols, {})
 		vim.keymap.set("n", "<Leader>r", builtin.lsp_references, {})
 		vim.keymap.set("n", "<C-p>", require("telescope.builtin").git_files, {})

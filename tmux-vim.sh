@@ -26,4 +26,8 @@ vim() {
   fi
 }
 
+bindkey -v
+bindkey -M viins '^R' history-incremental-search-backward
+bindkey -M vicmd '^R' history-incremental-search-backward
+
 tmux source-file ~/.config/nvim/tmux.conf
