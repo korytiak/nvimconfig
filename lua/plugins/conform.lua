@@ -2,6 +2,13 @@ return {
 	"stevearc/conform.nvim",
 	config = function()
 		require("conform").setup({
+      formatters = {
+        csharpier_format = {
+          command = "csharpier",
+          args = { "format", "--write-stdout" },
+          stdin = true,
+        },
+      },
 			formatters_by_ft = {
 				lua = { "stylua" },
 				python = { "isort", "black" },
@@ -10,7 +17,7 @@ return {
 				javascriptreact = { "prettierd", "prettier", stop_after_first = true },
 				typescript = { "prettierd", "prettier", stop_after_first = true },
 				typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-				cs = { "csharpier" },
+				cs = { "csharpier_format" },
 				go = { "gofmt" },
 			},
 		})
